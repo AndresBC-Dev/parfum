@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"testing"
 
 	"github.com/AndresBC-Dev/parfum/entity"
@@ -13,32 +12,31 @@ func (rm *RepositoryMock) Create(perfume entity.Parfum) error {
 	return nil
 }
 
-func TestCreate(t *testing.T) error {
+func TestCreate(t *testing.T) {
 	testCases := []struct {
 		Name          string
+		Perfume       entity.Parfum
 		ExpectedError error
 	}{
 		{
 			Name:          "Create Perfume",
+			Perfume:       entity.Parfum{Name: "Test Perfume"},
 			ExpectedError: nil,
 		},
 	}
 
 	repo := &RepositoryMock{}
-	var s perfumeService = NewPerfumeService(repo)
-	ctx := context.Background()
+	s := NewPerfumeService(repo)
 
-	for i := range testCases {
-		tc := testCases[i]
+	for _, tc := range testCases {
+		tc := tc // evita un problema común en el uso de variables de loop
 		t.Run(tc.Name, func(t *testing.T) {
 			t.Parallel()
 
-			_, err := s.Create(ctx)
-
+			err := s.Create(tc.Perfume)
 			if err != tc.ExpectedError {
-				t.Errorf("expected %v, got %v", tx.expected, err)
+				t.Errorf("expected %v, got %v", tc.ExpectedError, err)
 			}
 		})
-
 	}
 }
